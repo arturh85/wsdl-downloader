@@ -1,0 +1,7 @@
+﻿<?xml version='1.0' encoding='UTF-8'?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://gateway.example.com/"
+            xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1"
+            targetNamespace="http://gateway.example.com/">
+	<xsd:include schemaLocation="http://server.example.com:8080/Service?xsd=leaf1.xsd"/>
+	<xsd:include schemaLocation="http://server.example.com:8080/Service?xsd=leaf2.xsd"/>
+</xsd:schema>
