@@ -6,7 +6,7 @@ This utility recursivly downloads a WSDL documents with `xsd:include` tags like 
 <?xml version='1.0' encoding='UTF-8'?>
 <definitions xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://gateway.example.com/"
              xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns="http://schemas.xmlsoap.org/wsdl/"
-             name="ibeService" targetNamespace="http://gateway.example.com/">
+             name="Service" targetNamespace="http://gateway.example.com/">
 	<types>
 		<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://gateway.example.com/"
 					xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns="http://schemas.xmlsoap.org/wsdl/">
