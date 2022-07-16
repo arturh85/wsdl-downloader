@@ -1,6 +1,6 @@
 # Recursive WSDL downloader
 
-This utility recursivly downloads a WSDL documents with `xsd:include` tags like this:
+This cli app recursivly downloads a `WSDL` or `XSD` file with `xsd:include` / `xsd:import` tags like this:
 
 ```xml
 <?xml version='1.0' encoding='UTF-8'?>
@@ -20,7 +20,7 @@ This utility recursivly downloads a WSDL documents with `xsd:include` tags like 
     ...
 ```
 
-And turns it and all the referenced xsd files into a single `.wsdl` file with no `xsd:import`s to make it compatible with `SOAP` clients which do not support them. You can also download .xsd files and merge them into a single file.
+It replaces all imports/includes with their contents and writes a  single `.wsdl` / `.xsd` file to make it compatible with `SOAP` clients which do not support them. 
 
 ## 🐳 Running via Docker
 
@@ -48,8 +48,8 @@ All commands are run from the root of the project, from a terminal:
 
 | Command               | Action                                                         |
 | :-------------------- | :------------------------------------------------------------- |
-| `dotnet build`        | Installs [yarn](https://yarnpkg.com/) package manager globally |
-| `dotnet test`         | Installs dependencies                                          |
+| `dotnet build`        | Builds the project                                             |
+| `dotnet test`         | Run tests                                                      |
 
 ## 👀 Want to learn more?
 
