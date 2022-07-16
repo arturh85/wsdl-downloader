@@ -26,7 +26,7 @@ And turns it and all the referenced xsd files into a single `.wsdl` file with no
 To download a `.wsdl` or `.xsd` file with docker run:
 
 ```bash
-docker run -v $(pwd):/out arturh85/wsdldownload "http://server.example.com:8080/Service?wsdl" /out/Service.wsdl
+docker run -v $(pwd):/out arturh85/wsdl-downloader "http://server.example.com:8080/Service?wsdl" /out/Service.wsdl
 ```
 
 ## 🚀 Project Structure
