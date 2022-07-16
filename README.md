@@ -11,6 +11,7 @@ This utility recursivly downloads a WSDL documents with `xsd:include` tags like 
 		<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://gateway.example.com/"
 					xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns="http://schemas.xmlsoap.org/wsdl/">
 
+			<!-- this import will be followed & replaced with its contents -->
 			<xsd:import namespace="http://gateway.example.com/"
 						schemaLocation="http://server.example.com:8080/Service?xsd=example-service.xsd"/>
 
