@@ -19,6 +19,7 @@ app.AddCommand(async (
         Console.WriteLine("Finished");
     } catch(Exception e)
     {
+        Console.ForegroundColor = ConsoleColor.Red;
         Console.WriteLine(e);
     }
 });
