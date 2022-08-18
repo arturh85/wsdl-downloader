@@ -1,6 +1,29 @@
-# Recursive WSDL downloader
+# WSDL downloader
 
-This cli app recursivly downloads a `WSDL` or `XSD` file with `xsd:include` / `xsd:import` tags like this:
+The goal of this cli app is to automate wsdl download process.
+
+At the moment two commands are available:
+
+## WSDL downloader from csv
+This command allows you to download a number of wsdl files in a specific folder from a list stored in a csv
+
+```csv
+http://server.example.com:8080/Service?wsdl;;;;
+http://server.example.com:8080/Service?wsdl;username;password;test_1;
+http://server.example.com:8080/Service?wsdl;username;password;test_2;
+```
+Each line of the csv must contain the url. It also support credentials and filename but those are optional.
+
+### 🐳 Running via Docker
+
+To download a `.wsdl` or `.xsd` file with docker run:
+
+```bash
+docker run -v $(pwd):/out arturh85/wsdl-downloader --csvInputFile "test.csv" --outputFolderPath /out/Service.wsdl
+```
+
+## Recursive WSDL downloader
+This command recursivly downloads a `WSDL` or `XSD` file with `xsd:include` / `xsd:import` tags like this:
 
 ```xml
 <?xml version='1.0' encoding='UTF-8'?>
@@ -22,12 +45,12 @@ This cli app recursivly downloads a `WSDL` or `XSD` file with `xsd:include` / `x
 
 It replaces all imports/includes with their contents and writes a  single `.wsdl` / `.xsd` file to make it compatible with `SOAP` clients which do not support them. 
 
-## 🐳 Running via Docker
+### 🐳 Running via Docker
 
-To download a `.wsdl` or `.xsd` file with docker run:
+To download a `.wsdl` or `.xsd` file by using the recursive command with docker run:
 
 ```bash
-docker run -v $(pwd):/out arturh85/wsdl-downloader "http://server.example.com:8080/Service?wsdl" /out/Service.wsdl
+docker run -v $(pwd):/out arturh85/wsdl-downloader --sourceUrl "http://server.example.com:8080/Service?wsdl" --outputPath /out/Service.wsdl
 ```
 
 ## 🚀 Project Structure

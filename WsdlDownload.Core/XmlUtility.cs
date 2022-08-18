@@ -2,7 +2,7 @@
 
 using System.Xml;
 
-public class XmlUtility
+public static class XmlUtility
 {
     public static (XmlDocument, XmlNamespaceManager) LoadXsdStream(Stream xml)
     {
@@ -17,4 +17,12 @@ public class XmlUtility
         nsManager.AddNamespace("xsd", "http://www.w3.org/2001/XMLSchema");
         return nsManager;
     }
+
+    public static async Task<(XmlDocument xmlDoc, XmlNamespaceManager nsManager)> LoadXsdStream(this HttpClient httpClient, string xmlUrl)
+    {
+        var wsdlStream = await httpClient.GetStreamAsync(xmlUrl);
+        var(xmlDoc, nsManager) = XmlUtility.LoadXsdStream(wsdlStream);
+        return (xmlDoc, nsManager);
+    }
+    
 }
