@@ -1,6 +1,7 @@
 ﻿namespace WsdlDownload.Core;
 
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Xml;
 public class WsdlDownloadService
 {
@@ -11,15 +12,61 @@ public class WsdlDownloadService
         this.httpClient = httpClient;
     }
 
-    public async Task DownloadWsdlRecursive(string xmlUrl, string xmlPath)
+    public async Task<(XmlDocument? xmlDoc, XmlNamespaceManager? nsManager)> DownloadWsdlBase(string xmlUrl, string xmlPath, string? username = null, string? password = null)
     {
         if (File.Exists(xmlPath))
         {
+            return (null, null);
+        }
+
+        if (username != null && password != null)
+        {
+            httpClient.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Basic", $"{username}:{password}".Base64Encode());
+        }
+
+        return await httpClient.LoadXsdStream(xmlUrl);
+    }
+
+    public async Task<int> DownloadWsdls(string csvInputFile, string outputFolderPath)
+    {
+        if (!File.Exists(outputFolderPath))
+        {
+            Directory.CreateDirectory(outputFolderPath);
+        }
+
+        string[] lines = File.ReadAllLines(csvInputFile);
+        // url; username; password; filename;
+        var wsdls = lines.Select(s => s.Split(';'));
+
+        foreach (var wsdl in wsdls){
+            string outputFile = Path.Combine(outputFolderPath, (string.IsNullOrEmpty(wsdl[3]) ? Guid.NewGuid().ToString() : wsdl[3]) + ".wsdl");
+            await DownloadWsdl(wsdl[0], outputFile, wsdl[1], wsdl[2]);
+        }
+
+        return lines.Length;
+    }
+
+    public async Task DownloadWsdl(string xmlUrl, string xmlPath, string? username = null, string? password = null)
+    {
+        var (xmlDoc, _) = await DownloadWsdlBase(xmlUrl, xmlPath, username, password);
+        if (xmlDoc == null)
+        {
             return;
-        } 
+        }
+        xmlDoc.Save(xmlPath);
+    }
+
+    public async Task DownloadWsdlRecursive(string xmlUrl, string xmlPath)
+    {
+        var (xmlDoc, nsManager) = await DownloadWsdlBase(xmlUrl, xmlPath);
+        if (xmlDoc == null || nsManager == null)
+        {
+            return;
+        }
+
         var fetchHistory = new HashSet<string>();
-        var wsdlStream = await httpClient.GetStreamAsync(xmlUrl);
-        var (xmlDoc, nsManager) = XmlUtility.LoadXsdStream(wsdlStream);
+
         // xsd:import is used in wsdl files
         // xsd:include is used in xsd files
         var importNodes =
@@ -46,8 +93,7 @@ public class WsdlDownloadService
             return;
         }
         fetchHistory.Add(url);
-        var xsdStream = await httpClient.GetStreamAsync(url);
-        var (xmlDoc, nsManager) = XmlUtility.LoadXsdStream(xsdStream);
+        var (xmlDoc, nsManager) = await httpClient.LoadXsdStream(url);
         foreach (var child in xmlDoc.SelectSingleNode("/xsd:schema", nsManager)!.ChildNodes.OfType<XmlElement>())
         {
             if (child.Name == "xsd:include") { 

@@ -24,4 +24,22 @@ app.AddCommand(async (
     }
 });
 
+app.AddCommand(async (
+        [Argument(Description = "CSV input file")] string csvInputFile,
+        [Argument(Description = "WSDL output folder")] string outputFolderPath,
+        WsdlDownloadService wsdlDownloadService
+    ) =>
+{
+    try
+    {
+        await wsdlDownloadService.DownloadWsdls(csvInputFile, outputFolderPath);
+        Console.WriteLine("Finished");
+    }
+    catch (Exception e)
+    {
+        Console.ForegroundColor = ConsoleColor.Red;
+        Console.WriteLine(e);
+    }
+});
+
 app.Run();

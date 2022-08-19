@@ -55,6 +55,69 @@ public class WsdlDownloadServiceTests : IDisposable
         var resultWsdl = File.ReadAllText(Path.Combine(testDirectory.FullName, "bar.wsdl"));
         await Verify(resultWsdl)!;
     }
+    
+    [Fact]
+    public async Task SmokePasswordTest()
+    {
+        // load fixtures
+        using var rootWsdlFixture = File.OpenRead("Fixtures/root.wsdl");
+
+        // configure mocks
+        var mockHttp = new MockHttpMessageHandler();
+        mockHttp.When("http://server.example.com:8080/Service?wsdl")
+                .Respond(MediaTypeNames.Text.Xml, rootWsdlFixture);
+
+        // configure services
+        var services = new ServiceCollection();
+        services.AddSingleton(mockHttp.ToHttpClient());
+        services.AddSingleton<WsdlDownloadService>();
+        var provider = services.BuildServiceProvider();
+        var wsdlService = provider.GetRequiredService<WsdlDownloadService>();
+
+        // run object under test
+        await wsdlService.DownloadWsdl(
+            "http://server.example.com:8080/Service?wsdl", 
+            Path.Combine(testDirectory.FullName, "test.wsdl"),
+            "username",
+            "password"
+        );
+
+        // verify expectations
+        testDirectory.EnumerateFiles().Count().Should().Be(1);
+        var resultWsdl = File.ReadAllText(Path.Combine(testDirectory.FullName, "test.wsdl"));
+        await Verify(resultWsdl)!;
+    }
+    
+    [Fact]
+    public async Task SmokeListPasswordTest()
+    {
+        // load fixtures
+        using var rootWsdlFixture = File.OpenRead("Fixtures/root.wsdl");
+        var input = testDirectory.Parent + "\\..\\..\\..\\Fixtures\\input.csv";
+        var output = testDirectory.FullName + "\\Output";
+        Directory.CreateDirectory(output);
+
+        // configure mocks
+        var mockHttp = new MockHttpMessageHandler();
+        mockHttp.When("http://server.example.com:8080/Service?wsdl")
+                .Respond(MediaTypeNames.Text.Xml, rootWsdlFixture);
+
+        // configure services
+        var services = new ServiceCollection();
+        services.AddSingleton(mockHttp.ToHttpClient());
+        services.AddSingleton<WsdlDownloadService>();
+        var provider = services.BuildServiceProvider();
+        var wsdlService = provider.GetRequiredService<WsdlDownloadService>();
+
+        // run object under test
+        var lines = await wsdlService.DownloadWsdls(
+            input,
+            output
+        );
+
+        // verify expectations
+        new DirectoryInfo(output).EnumerateFiles().Count().Should().Be(lines);
+    }
 
     public void Dispose()
     {
@@ -62,6 +125,6 @@ public class WsdlDownloadServiceTests : IDisposable
         {
             file.Delete();
         }
-        testDirectory.Delete();
+        testDirectory.Delete(true);
     }
 }

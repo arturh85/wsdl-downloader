@@ -1,0 +1,3 @@
+﻿http://server.example.com:8080/Service?wsdl;;;;
+http://server.example.com:8080/Service?wsdl;username;password;test_1;
+http://server.example.com:8080/Service?wsdl;username;password;test_2;
